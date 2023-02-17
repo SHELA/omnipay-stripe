@@ -394,6 +394,11 @@ class AuthorizeRequest extends AbstractRequest
 
         $data['confirmation_method'] = 'manual';
         $data['capture_method'] = 'manual';
+        $data['payment_method_options'] = [
+            "card" => [
+                "request_three_d_secure" => "any"
+            ]
+        ];
 
         $data['confirm'] = $this->getConfirm() ? 'true' : 'false';
 
