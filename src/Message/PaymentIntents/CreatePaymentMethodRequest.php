@@ -53,27 +53,46 @@ namespace Omnipay\Stripe\Message\PaymentIntents;
  */
 class CreatePaymentMethodRequest extends AbstractRequest
 {
+
+    public function getType()
+    {
+        return $this->getParameter('type');
+    }
+
+    /**
+     * @param string $value
+     * @return $this
+     */
+    public function setType($value)
+    {
+        return $this->setParameter('type', $value);
+    }
+
     /**
      * @inheritdoc
      */
     public function getData()
     {
-        $data = [];
+        $data = ["type" => "card"];
 
-        if ($this->getToken()) {
-            $data['card'] = ['token' => $this->getToken()];
-        } elseif ($this->getCard()) {
-            $data['card'] = $this->getCardData();
-        } else {
-            // one of token or card is required
-            $this->validate('card');
+        if($this->getType())
+            $data['type'] = $this->getType();
+        if($this->getType() == "card"){
+
+            if ($this->getToken()) {
+                $data['card'] = ['token' => $this->getToken()];
+            } elseif ($this->getCard()) {
+                $data['card'] = $this->getCardData();
+            } else {
+                // one of token or card is required
+                $this->validate('card');
+            }
+
+            if ($this->getCard() && $billingDetails = $this->getBillingDetails()) {
+                $data['billing_details'] = $billingDetails;
+            }
         }
 
-        if ($this->getCard() && $billingDetails = $this->getBillingDetails()) {
-            $data['billing_details'] = $billingDetails;
-        }
-
-        $data['type'] = 'card';
 
         return $data;
     }
