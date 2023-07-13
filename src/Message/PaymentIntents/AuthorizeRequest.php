@@ -271,6 +271,24 @@ class AuthorizeRequest extends AbstractRequest
     /**
      * @return mixed
      */
+    public function getPaymentMethodTypes()
+    {
+        return $this->getParameter('paymentMethodTypes');
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return AbstractRequest provides a fluent interface.
+     */
+    public function setPaymentMethodTypes($value)
+    {
+        return $this->setParameter('paymentMethodTypes', $value);
+    }
+
+    /**
+     * @return mixed
+     */
     public function getReceiptEmail()
     {
         return $this->getParameter('receipt_email');
@@ -306,6 +324,26 @@ class AuthorizeRequest extends AbstractRequest
     public function getSetupFutureUsage()
     {
         return $this->getParameter('setup_future_usage');
+    }
+    /**
+     * Set the payment_method_options parameter.
+     *
+     * @param $value
+     * @return AbstractRequest provides a fluent interface.
+     */
+    public function setPaymentMethodOptions($value)
+    {
+        return $this->setParameter('payment_method_options', $value);
+    }
+
+    /**
+     * Get the payment_method_options parameter.
+     *
+     * @return mixed
+     */
+    public function getPaymentMethodOptions()
+    {
+        return $this->getParameter('payment_method_options');
     }
 
     /**
@@ -366,6 +404,10 @@ class AuthorizeRequest extends AbstractRequest
             $data['receipt_email'] = $this->getReceiptEmail();
         }
 
+        if ($this->getPaymentMethodTypes()) {
+            $data['payment_method_types'] = $this->getPaymentMethodTypes();
+        }
+
         if ($this->getPaymentMethod()) {
             $data['payment_method'] = $this->getPaymentMethod();
         } elseif ($this->getSource()) {
@@ -394,11 +436,8 @@ class AuthorizeRequest extends AbstractRequest
 
         $data['confirmation_method'] = 'manual';
         $data['capture_method'] = 'manual';
-        $data['payment_method_options'] = [
-            "card" => [
-                "request_three_d_secure" => "any"
-            ]
-        ];
+        if($this->getPaymentMethodOptions())
+            $data['payment_method_options'] = $this->getPaymentMethodOptions();
 
         $data['confirm'] = $this->getConfirm() ? 'true' : 'false';
 
@@ -406,7 +445,6 @@ class AuthorizeRequest extends AbstractRequest
             $this->validate('returnUrl');
             $data['return_url'] = $this->getReturnUrl();
         }
-        $data['off_session'] = $this->getOffSession() ? 'true' : 'false';
 
 
         return $data;
